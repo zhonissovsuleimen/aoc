@@ -4,8 +4,8 @@ pub trait AOC {
 }
 
 pub trait Day {
-  const INPUT: &'static str;
   fn day(&self) -> usize;
+  fn input(&self) -> Option<String>;
   fn solution(&self) -> Option<String>;
   fn solution_extra(&self) -> Option<String>;
 }
