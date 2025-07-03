@@ -3,4 +3,8 @@ name = "aoc"
 version = "0.1.0"
 edition = "2024"
 
-[dependencies]
+[workspace]
+members = ["aoc_trait"]
+
+[workspace.dependencies]
+aoc_trait = { path = "aoc_trait" }
