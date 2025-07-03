@@ -1,6 +1,7 @@
 pub trait AOC {
   const YEAR: usize;
   fn last() -> impl Day;
+  fn all() -> Vec<Box<dyn Day>>;
 }
 
 pub trait Day {

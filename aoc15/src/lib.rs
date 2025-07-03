@@ -9,4 +9,10 @@ impl AOC for AOC15 {
   fn last() -> impl Day {
     days::d1::D1
   }
+
+  fn all() -> Vec<Box<dyn Day>> {
+    vec![
+      Box::new(days::d1::D1),
+    ]
+  }
 }
