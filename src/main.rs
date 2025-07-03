@@ -1,7 +1,10 @@
-use aoc_trait::AOC;
+use aoc_trait::{AOC, Day};
 use aoc15::AOC15;
 
 fn main() {
   println!("AOC {}", AOC15::YEAR);
-  println!("{}", AOC15::last());
+  
+  let last_day = AOC15::last();
+  println!("Day {}", last_day.solution());
+  println!("Day {} Extra", last_day.solution_extra());
 }

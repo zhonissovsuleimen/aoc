@@ -1,15 +1,16 @@
-use aoc_trait::AOC;
+use aoc_trait::{AOC, Day};
+mod days;
 
 pub struct AOC15;
 
 impl AOC for AOC15 {
   const YEAR: usize = 2015;
 
-  fn last() -> String {
-    String::new()
+  fn last() -> impl Day {
+    days::d1::D1
   }
 
-  fn all() -> Vec<String> {
-    Vec::new()
+  fn all() -> Vec<impl Day> {
+    vec![Self::last()]
   }
 }
