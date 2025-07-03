@@ -48,7 +48,7 @@ impl Day for D1 {
     1
   }
 
-  fn solution(&self) -> String {
+  fn solution(&self) -> Option<String> {
     let mut count = 0;
 
     for c in Self::INPUT.chars() {
@@ -59,10 +59,10 @@ impl Day for D1 {
       }
     }
 
-    count.to_string()
+    Some(count.to_string())
   }
 
-  fn solution_extra(&self) -> String {
+  fn solution_extra(&self) -> Option<String> {
     let mut count = 0;
     let mut position = 0;
 
@@ -79,6 +79,6 @@ impl Day for D1 {
       }
     }
 
-    position.to_string()
+    Some(position.to_string())
   }
 }

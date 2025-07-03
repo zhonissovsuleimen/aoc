@@ -9,8 +9,4 @@ impl AOC for AOC15 {
   fn last() -> impl Day {
     days::d1::D1
   }
-
-  fn all() -> Vec<impl Day> {
-    vec![Self::last()]
-  }
 }
