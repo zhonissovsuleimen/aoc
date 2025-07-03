@@ -4,7 +4,11 @@ version = "0.1.0"
 edition = "2024"
 
 [workspace]
-members = ["aoc_trait"]
+members = [ "aoc15","aoc_trait"]
 
 [workspace.dependencies]
 aoc_trait = { path = "aoc_trait" }
+
+[dependencies]
+aoc_trait = { path = "aoc_trait" }
+aoc15 ={ path = "aoc15" }
