@@ -30,6 +30,14 @@ impl Day for D4 {
       return None;
     };
 
+    for i in 100_000..=999_999 {
+      let hash_input = format!("{input}{i}");
+      let hash = Self::md5(hash_input.as_bytes());
+
+      if Self::bytes_to_string(hash).starts_with("00000") {
+        return Some(i.to_string());
+      }
+    }
     None
   }
 
