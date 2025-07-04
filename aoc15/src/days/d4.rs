@@ -16,6 +16,12 @@ For example:
     If your secret key is pqrstuv, the lowest number it combines with to make an MD5 hash starting with five zeroes is 1048970; that is, the MD5 hash of pqrstuv1048970 looks like 000006136ef....
 */
 
+/*
+--- Part Two ---
+
+Now find one that starts with six zeroes.
+*/
+
 impl Day for D4 {
   fn day(&self) -> usize {
     4
@@ -48,7 +54,17 @@ impl Day for D4 {
       return None;
     };
 
-    None
+    let mut i = 0;
+    loop {
+      let hash_input = format!("{input}{i}");
+      let hash = Self::md5(hash_input.as_bytes());
+
+      if Self::bytes_to_string(hash).starts_with("000000") {
+        return Some(i.to_string());
+      }
+
+      i += 1;
+    }
   }
 }
 
