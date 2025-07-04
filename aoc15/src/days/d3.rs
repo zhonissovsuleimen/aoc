@@ -1,4 +1,4 @@
-use std::{collections::{HashMap, HashSet}, result};
+use std::collections::HashSet;
 
 use aoc_trait::Day;
 
