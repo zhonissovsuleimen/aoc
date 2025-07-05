@@ -22,6 +22,29 @@ For example:
 After following the instructions, how many lights are lit?
 */
 
+/*
+--- Part Two ---
+
+You just finish implementing your winning light pattern when you realize you mistranslated Santa's message from Ancient Nordic Elvish.
+
+The light grid you bought actually has individual brightness controls; each light can have a brightness of zero or more. The lights all start at zero.
+
+The phrase turn on actually means that you should increase the brightness of those lights by 1.
+
+The phrase turn off actually means that you should decrease the brightness of those lights by 1, to a minimum of zero.
+
+The phrase toggle actually means that you should increase the brightness of those lights by 2.
+
+What is the total brightness of all lights combined after following Santa's instructions?
+
+For example:
+
+    turn on 0,0 through 0,0 would increase the total brightness by 1.
+    toggle 0,0 through 999,999 would increase the total brightness by 2000000.
+
+
+*/
+
 impl Day for D6 {
   fn day(&self) -> usize {
     6
@@ -76,7 +99,31 @@ impl Day for D6 {
       return None;
     };
 
-    None
+    let mut grid = vec![vec![0_u32; 1000]; 1000];
+
+    for line in input.lines() {
+      let instruction = Self::parse(line);
+
+      for i in (instruction.from.0)..=(instruction.to.0) {
+        for j in (instruction.from.1)..=(instruction.to.1) {
+          let before = grid[i][j];
+          grid[i][j] = match instruction.mode {
+            Mode::Off => before.saturating_sub(1),
+            Mode::On => before + 1,
+            Mode::Toggle => before + 2,
+          };
+        }
+      }
+    }
+
+    let mut count = 0;
+    for i in 0..1000 {
+      for j in 0..1000 {
+        count += grid[i][j];
+      }
+    }
+
+    Some(count.to_string())
   }
 }
 
