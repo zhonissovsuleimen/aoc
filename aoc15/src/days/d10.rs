@@ -27,7 +27,10 @@ impl Day for D10 {
       return None;
     };
 
-    None
+    let values = input.chars().map(|c| c.to_digit(10).unwrap()).collect::<Vec<u32>>();
+    let len = look_and_say(0, 50, values).len();
+
+    Some(len.to_string())
   }
 }
 
