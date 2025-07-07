@@ -29,6 +29,18 @@ The shortest of these is London -> Dublin -> Belfast = 605, and so the answer is
 What is the distance of the shortest route?
 */
 
+/*
+--- Part Two ---
+
+The next year, just to show off, Santa decides to take the route with the longest distance instead.
+
+He can still start and end at any two (different) locations he wants, and he still must visit each location exactly once.
+
+For example, given the distances above, the longest route would be 982 via (for example) Dublin -> London -> Belfast.
+
+What is the distance of the longest route?
+*/
+
 impl Day for D9 {
   fn day(&self) -> usize {
     9
@@ -93,11 +105,50 @@ impl Day for D9 {
   }
 
   fn solution_extra(&self) -> Option<String> {
-    // let Some(input) = self.input() else {
-    //   return None;
-    // };
+    let Some(input) = self.input() else {
+      return None;
+    };
 
-    None
+    let mut cities = HashSet::<String>::new();
+    let mut distance_map = HashMap::<(String, String), u32>::new();
+
+    for line in input.lines() {
+      let tokens = line.split(' ').collect::<Vec<&str>>();
+
+      match tokens.as_slice() {
+        [from, "to", to, "=", distance] => {
+          let from = from.to_string();
+          let to = to.to_string();
+          let distance = distance.parse().unwrap();
+
+          distance_map.insert((from.clone(), to.clone()), distance);
+
+          distance_map.insert((to.clone(), from.clone()), distance);
+
+          cities.insert(from);
+          cities.insert(to);
+        }
+        _ => unreachable!(),
+      }
+    }
+
+    let paths = gen_travel_paths(cities.into_iter().collect());
+
+    let mut max = 0u32;
+    for path in paths {
+      let mut local_max = 0u32;
+
+      for window in path.windows(2) {
+        let from = &window[0];
+        let to = &window[1];
+
+        local_max = local_max.saturating_add(*distance_map.get(&(from.clone(), to.clone())).unwrap_or(&0));
+      }
+
+      max = max.max(local_max);
+    }
+
+    Some(max.to_string())
   }
 }
 
