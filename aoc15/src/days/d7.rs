@@ -47,6 +47,12 @@ y: 456
 In little Bobby's kit's instructions booklet (provided as your puzzle input), what signal is ultimately provided to wire a?
 */
 
+/*
+--- Part Two ---
+
+Now, take the signal you got on wire a, override wire b to that signal, and reset the other wires (including wire a). What new signal is ultimately provided to wire a?
+*/
+
 impl Day for D7 {
   fn day(&self) -> usize {
     7
@@ -86,7 +92,21 @@ impl Day for D7 {
       return None;
     };
 
-    None
+    let mut expressions = HashMap::<String, Expression>::new();
+    let mut values = HashMap::<String, u16>::new();
+
+    for line in input.lines() {
+      let (key, value) = parse_line(line);
+      expressions.insert(key, value);
+    }
+
+    let initial_a_result = solve(&expressions["a"], &expressions, &mut values);
+
+    expressions.insert(String::from("b"), Expression::Value(initial_a_result));
+    values.clear();
+
+    let result = solve(&expressions["a"], &expressions, &mut values);
+    Some(result.to_string())
   }
 }
 
