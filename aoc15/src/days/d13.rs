@@ -42,6 +42,17 @@ After trying every other seating arrangement in this hypothetical scenario, you 
 What is the total change in happiness for the optimal seating arrangement of the actual guest list?
 */
 
+
+/*
+--- Part Two ---
+
+In all the commotion, you realize that you forgot to seat yourself. At this point, you're pretty apathetic toward the whole thing, and your happiness wouldn't really go up or down regardless of who you sit next to. You assume everyone else would be just as ambivalent about sitting next to you, too.
+
+So, add yourself to the list, and give all happiness relationships that involve you a score of 0.
+
+What is the total change in happiness for the optimal seating arrangement that actually includes yourself?
+*/
+
 impl Day for D13 {
   fn day(&self) -> usize {
     13
@@ -115,7 +126,57 @@ impl Day for D13 {
       return None;
     };
 
-    None
+    let mut guests = HashSet::<String>::new();
+    let mut hapiness_map = HashMap::<(String, String), i32>::new();
+
+    for line in input.lines() {
+      let tokens = line.split(' ').collect::<Vec<&str>>();
+
+      match tokens.as_slice() {
+        [from, "would", effect, num, "happiness", "units", "by", "sitting", "next", "to", to] => {
+          let from = from.to_string();
+          let to = to[..to.len()-1].to_string();
+          let num = num.parse::<i32>().unwrap();
+          let sign = if *effect == "gain" { 1 } else { -1 };
+
+          hapiness_map.entry((from.clone(), to.clone())).and_modify(|value| *value += num * sign).or_insert(num * sign);
+          hapiness_map.entry((to.clone(), from.clone())).and_modify(|value| *value += num * sign).or_insert(num * sign);
+
+          guests.insert(from);
+          guests.insert(to);
+        }
+        _ => unreachable!(),
+      }
+    }
+
+    guests.insert("Me".to_string());
+    for guest in &guests {
+      hapiness_map.insert(("Me".to_string(), guest.clone()), 0);
+      hapiness_map.insert((guest.clone(), "Me".to_string()), 0);
+    }
+
+    let mut paths = gen_sitting_order(guests.into_iter().collect());
+
+    for path in paths.iter_mut() {
+      let first = path.first().unwrap();
+      path.push(first.clone());
+    }
+
+    let mut max = 0i32;
+    for path in paths {
+      let mut local_max = 0i32;
+
+      for window in path.windows(2) {
+        let from = &window[0];
+        let to = &window[1];
+
+        local_max = local_max.saturating_add(*hapiness_map.get(&(from.clone(), to.clone())).unwrap_or(&0));
+      }
+
+      max = max.max(local_max);
+    }
+
+    Some(max.to_string())
   }
 }
 
