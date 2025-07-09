@@ -1,7 +1,7 @@
 use aoc_trait::Day;
+use serde_json::Value;
 
 pub struct D12;
-
 
 /*
 --- Day 12: JSAbacusFramework.io ---
@@ -43,34 +43,9 @@ impl Day for D12 {
       return None;
     };
 
-    let mut sum = 0;
+    let v: Value = serde_json::from_str(&input).unwrap();
 
-    let chars = input.chars().collect::<Vec<char>>();
-    let mut i = 0;
-    while i < input.len() {
-      let mut c = chars[i];
-
-      if c.is_digit(10) {
-        let negative = i != 0 && chars[i - 1] == '-';
-        let mut digits = vec![];
-
-        while c.is_digit(10) {
-          digits.push(c.to_digit(10).unwrap() as i32);
-          i += 1;
-          c = chars[i];
-        }
-
-        let mut number = 0i32;
-        for (i, digit) in digits.into_iter().rev().enumerate() {
-          number += digit * 10_i32.pow(i as u32);
-        }
-
-        sum += if negative { -number } else { number };
-      }
-      i += 1;
-    }
-
-    Some(sum.to_string())
+    Some(count_nums(v).to_string())
   }
 
   fn solution_extra(&self) -> Option<String> {
@@ -79,5 +54,29 @@ impl Day for D12 {
     };
 
     None
+  }
+}
+
+fn count_nums(json: Value) -> i32 {
+  match json {
+    Value::Null => 0,
+    Value::Bool(_) => 0,
+    Value::Number(number) => number.as_i64().unwrap_or(0) as i32,
+    Value::String(_) => 0,
+    Value::Array(values) => {
+      let mut sum = 0;
+      for child_value in values {
+        sum += count_nums(child_value);
+      }
+
+      sum
+    }
+    Value::Object(map) => {
+      let mut sum = 0;
+      for child_value in map.into_values() {
+        sum += count_nums(child_value);
+      }
+      sum
+    }
   }
 }

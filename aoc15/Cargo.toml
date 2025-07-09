@@ -5,3 +5,4 @@ edition = "2024"
 
 [dependencies]
 aoc_trait = { workspace = true }
+serde_json = "1.0.140"
