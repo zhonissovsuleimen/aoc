@@ -19,6 +19,20 @@ In this example, after the 1000th second, both reindeer are resting, and Comet i
 Given the descriptions of each reindeer (in your puzzle input), after exactly 2503 seconds, what distance has the winning reindeer traveled?
 */
 
+/*
+--- Part Two ---
+
+Seeing how reindeer move in bursts, Santa decides he's not pleased with the old scoring system.
+
+Instead, at the end of each second, he awards one point to the reindeer currently in the lead. (If there are multiple reindeer tied for the lead, they each get one point.) He keeps the traditional 2503 second time limit, of course, as doing otherwise would be entirely ridiculous.
+
+Given the example reindeer from above, after the first second, Dancer is in the lead and gets one point. He stays in the lead until several seconds into Comet's second burst: after the 140th second, Comet pulls into the lead and gets his first point. Of course, since Dancer had been in the lead for the 139 seconds before that, he has accumulated 139 points by the 140th second.
+
+After the 1000th second, Dancer has accumulated 689 points, while poor Comet, our old champion, only has 312. So, with the new scoring system, Dancer would win (if the race ended at 1000 seconds).
+
+Again given the descriptions of each reindeer (in your puzzle input), after exactly 2503 seconds, how many points does the winning reindeer have?
+*/
+
 pub struct D14;
 
 impl Day for D14 {
@@ -69,7 +83,45 @@ impl Day for D14 {
       return None;
     };
 
-    None
+    let mut fleet = vec![];
+
+    for line in input.lines() {
+      let tokens = line.split(' ').collect::<Vec<&str>>();
+
+      match tokens.as_slice() {
+        [name, "can", "fly", speed, "km/s", "for", endurance, .., "for", cooldown, "seconds."] => {
+          fleet.push(Reindeer {
+            name: name.to_string(),
+            speed: speed.parse().unwrap(),
+            endurance: endurance.parse().unwrap(),
+            cooldown: cooldown.parse().unwrap(),
+          });
+        }
+        _ => unreachable!(),
+      }
+    }
+
+    let max_distabce_per_sec = (1..=2503)
+      .into_iter()
+      .map(|time| 
+        fleet
+        .iter()
+        .map(|rd| rd.fly(time))
+        .max().unwrap()
+      )
+      .collect::<Vec<u32>>();
+
+    let final_points_per_reindeer = fleet
+      .iter()
+      .map(|rd| (1..=2503)
+        .into_iter()
+        .map(|time| if max_distabce_per_sec[time - 1] == rd.fly(time as u32) { 1u32 } else { 0u32 })
+        .sum::<u32>()
+      )
+      .collect::<Vec<u32>>();
+
+    let final_winner_score = final_points_per_reindeer.iter().max().unwrap();
+    Some(final_winner_score.to_string())
   }
 }
 
