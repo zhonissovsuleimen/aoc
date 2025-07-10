@@ -41,6 +41,16 @@ You make a list of the things you can remember about each Aunt Sue. Things missi
 What is the number of the Sue that got you the gift?
 */
 
+/*
+--- Part Two ---
+
+As you're about to send the thank you note, something in the MFCSAM's instructions catches your eye. Apparently, it has an outdated retroencabulator, and so the output from the machine isn't exact values - some of them indicate ranges.
+
+In particular, the cats and trees readings indicates that there are greater than that many (due to the unpredictable nuclear decay of cat dander and tree pollen), while the pomeranians and goldfish readings indicate that there are fewer than that many (due to the modial interaction of magnetoreluctance).
+
+What is the number of the real Aunt Sue?
+*/
+
 impl Day for D16 {
   fn day(&self) -> usize {
     16
@@ -121,20 +131,71 @@ impl Day for D16 {
       return None;
     };
 
-    None
+    let mut suspects = vec![];
+
+    for line in input.lines() {
+      let tokens = line.split(' ').collect::<Vec<&str>>();
+
+      match tokens.as_slice() {
+        ["Sue", _id, a, a_value, b, b_value, c, c_value] => {
+          let a_value = a_value[..a_value.len() - 1].parse::<u32>().unwrap();
+          let b_value = b_value[..b_value.len() - 1].parse::<u32>().unwrap();
+          let c_value = c_value.parse::<u32>().unwrap();
+
+          let mut evidence = HashMap::<String, u32>::with_capacity(3);
+          evidence.insert(a.to_string(), a_value);
+          evidence.insert(b.to_string(), b_value);
+          evidence.insert(c.to_string(), c_value);
+
+          suspects.push(evidence);
+        }
+        _ => unreachable!(),
+      }
+    }
+
+    let mut target = HashMap::new();
+    target.insert(String::from("children:"), 3);
+    target.insert(String::from("cats:"), 7);
+    target.insert(String::from("samoyeds:"), 2);
+    target.insert(String::from("pomeranians:"), 3);
+    target.insert(String::from("akitas:"), 0);
+    target.insert(String::from("vizslas:"), 0);
+    target.insert(String::from("goldfish:"), 5);
+    target.insert(String::from("trees:"), 3);
+    target.insert(String::from("cars:"), 2);
+    target.insert(String::from("perfumes:"), 1);
+
+    let mut sue_id = 0;
+    for (i, evidence) in suspects.into_iter().enumerate() {
+      let mut found = true;
+      for (name, evidence_value) in evidence.iter() {
+        if let Some(target_value) = target.get(name) {
+          match name.as_str() {
+            "cats:" | "trees:" => {
+              if target_value >= evidence_value {
+                found = false;
+              }
+            }
+            "pomeranians:" | "goldfish:" => {
+              if target_value <= evidence_value {
+                found = false;
+              }
+            }
+            _ => {
+              if target_value != evidence_value {
+                found = false;
+              }
+            }
+          }
+        }
+      }
+
+      if found {
+        sue_id = i + 1;
+        break;
+      }
+    }
+
+    Some(sue_id.to_string())
   }
 }
-
-// struct Evidence {
-//   id: u32,
-//   children: Option<u32>,
-//   cats: Option<u32>,
-//   samoyeds: Option<u32>,
-//   pomeranians: Option<u32>,
-//   akitas: Option<u32>,
-//   vizslas: Option<u32>,
-//   goldfish: Option<u32>,
-//   trees: Option<u32>,
-//   cars: Option<u32>,
-//   perfumes: Option<u32>,
-// }
