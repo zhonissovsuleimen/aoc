@@ -31,6 +31,16 @@ Multiplying these together (68 * 80 * 152 * 76, ignoring calories for now) resul
 
 Given the ingredients in your kitchen and their properties, what is the total score of the highest-scoring cookie you can make?
 */
+
+/*
+--- Part Two ---
+
+Your cookie recipe becomes wildly popular! Someone asks if you can make another recipe that has exactly 500 calories per cookie (so they can use it as a meal replacement). Keep the rest of your award-winning process the same (100 teaspoons, same ingredients, same scoring system).
+
+For example, given the ingredients above, if you had instead selected 40 teaspoons of butterscotch and 60 teaspoons of cinnamon (which still adds to 100), the total calorie count would be 40*8 + 60*3 = 500. The total score would go down, though: only 57600000, the best you can do in such trying circumstances.
+
+Given the ingredients in your kitchen and their properties, what is the total score of the highest-scoring cookie you can make with a calorie total of 500?
+*/
 pub struct D15;
 
 impl Day for D15 {
@@ -127,7 +137,75 @@ impl Day for D15 {
     let Some(input) = self.input() else {
       return None;
     };
+    let mut ingredients = vec![];
 
-    None
+    for line in input.lines() {
+      let tokens = line.split(' ').collect::<Vec<&str>>();
+
+      match tokens.as_slice() {
+        [
+          _,
+          "capacity", capacity,
+          "durability", durability,
+          "flavor", flavor,
+          "texture", texture,
+          "calories", calories,
+        ] => {
+          let capacity = capacity[..capacity.len() - 1].parse::<i64>().unwrap();
+          let durability = durability[..durability.len() - 1].parse::<i64>().unwrap();
+          let flavor = flavor[..flavor.len() - 1].parse::<i64>().unwrap();
+          let texture = texture[..texture.len() - 1].parse::<i64>().unwrap();
+          let calories = calories.parse::<i64>().unwrap();
+
+          ingredients.push((capacity, durability, flavor, texture, calories));
+        }
+        _ => unreachable!(),
+      }
+    }
+
+    let mut counts = vec![0usize; ingredients.len()];
+    let mut best = 0;
+
+    let mut done = false;
+    while !done {
+      while counts.iter().sum::<usize>() > 100 {
+        if counts[counts.len() - 1] == 100 {
+          done = true;
+          break;
+        }
+
+        for i in 0..counts.len() - 1 {
+          if counts[i] != 0 {
+            counts[i] = 0;
+            counts[i + 1] += 1;
+            break;
+          }
+        }
+
+        if let Some(last_count) = counts.last() {
+          done = *last_count == 100;
+        }
+      }
+
+      let cookie = ingredients.iter().enumerate().fold((0, 0, 0, 0, 0), |mut acc, (i, x)| {
+        let count = counts[i] as i64;
+        acc.0 += x.0 * count;
+        acc.1 += x.1 * count;
+        acc.2 += x.2 * count;
+        acc.3 += x.3 * count;
+        acc.4 += x.4 * count;
+
+        acc
+      });
+
+      let score = cookie.0.max(0) * cookie.1.max(0) * cookie.2.max(0) * cookie.3.max(0);
+      if cookie.4 == 500 {
+        best = best.max(score);
+      }
+
+      counts[0] += 1;
+    }
+
+    Some(best.to_string())
   }
 }
