@@ -7,7 +7,7 @@ impl AOC for AOC15 {
   const YEAR: usize = 2015;
 
   fn last() -> impl Day {
-    days::d16::D16
+    days::d17::D17
   }
 
   fn all() -> Vec<Box<dyn Day>> {
@@ -28,6 +28,7 @@ impl AOC for AOC15 {
       Box::new(days::d14::D14),
       Box::new(days::d15::D15),
       Box::new(days::d16::D16),
+      Box::new(days::d17::D17),
     ]
   }
 }
