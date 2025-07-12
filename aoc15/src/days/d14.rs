@@ -64,7 +64,7 @@ impl Day for D14 {
       match tokens.as_slice() {
         [name, "can", "fly", speed, "km/s", "for", endurance, .., "for", cooldown, "seconds."] => {
           fleet.push(Reindeer {
-            name: name.to_string(),
+            _name: name.to_string(),
             speed: speed.parse().unwrap(),
             endurance: endurance.parse().unwrap(),
             cooldown: cooldown.parse().unwrap(),
@@ -91,7 +91,7 @@ impl Day for D14 {
       match tokens.as_slice() {
         [name, "can", "fly", speed, "km/s", "for", endurance, .., "for", cooldown, "seconds."] => {
           fleet.push(Reindeer {
-            name: name.to_string(),
+            _name: name.to_string(),
             speed: speed.parse().unwrap(),
             endurance: endurance.parse().unwrap(),
             cooldown: cooldown.parse().unwrap(),
@@ -126,7 +126,7 @@ impl Day for D14 {
 }
 
 struct Reindeer {
-  name: String,
+  _name: String,
   speed: u32,
   endurance: u32,
   cooldown: u32,
