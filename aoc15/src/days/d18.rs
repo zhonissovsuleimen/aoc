@@ -163,6 +163,74 @@ impl Day for D18 {
       return None;
     };
 
-    None
+    let mut grid = vec![vec![false; 100]; 100];
+
+    for (i, line) in input.lines().enumerate() {
+      let line_bools = line
+        .chars()
+        .map(|c| match c {
+          '.' => false,
+          '#' => true,
+          _ => unreachable!(),
+        })
+        .collect::<Vec<bool>>();
+
+      grid[i] = line_bools;
+    }
+    grid[0][0] = true;
+    grid[0][99] = true;
+    grid[99][0] = true;
+    grid[99][99] = true;
+
+    for _ in 0..100 {
+      let cache = grid.clone();
+      for i in 0..100 {
+        for j in 0..100 {
+          if (i == 0 && j == 0)
+            || (i == 0 && j == 99)
+            || (i == 99 && j == 0)
+            || (i == 99 && j == 99) {
+            continue;
+          }
+          let mut alive_neighbours = 0;
+
+          for di in -1..=1 {
+            for dj in -1..=1 {
+              if di == 0 && dj == 0 {
+                continue;
+              }
+
+              let new_i = i as i32 + di;
+              let new_j = j as i32 + dj;
+              if new_i >= 0
+                && new_i < 100
+                && new_j >= 0
+                && new_j < 100
+                && cache[new_i as usize][new_j as usize]
+              {
+                alive_neighbours += 1;
+              }
+            }
+          }
+
+          grid[i][j] = match cache[i][j] {
+            true => alive_neighbours == 2 || alive_neighbours == 3,
+            false => alive_neighbours == 3,
+          };
+        }
+      }
+    }
+
+    let alive_count = grid
+      .into_iter()
+      .map(|grid_line| {
+        grid_line
+          .into_iter()
+          .map(|grid_cell| if grid_cell { 1 } else { 0 })
+          .sum::<u32>()
+      })
+      .sum::<u32>();
+
+    Some(alive_count.to_string())
   }
 }
