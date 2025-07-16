@@ -47,29 +47,17 @@ impl Day for D20 {
     };
     let input_num = input.parse::<u32>().unwrap();
 
-    let mut house_num = 1;
-    loop {
-      let mut count = 0;
+    let cap = input_num as usize / 10;
+    let mut cache = vec![0u32; cap + 1];
 
-      let cap = (house_num as f32).sqrt().floor() as usize;
-      for i in 1..=cap {
-        if house_num % i == 0 {
-          let j = house_num / i;
-          count += 10 * i as u32;
-          if i != j {
-            count += 10 * j as u32;
-          }
-        }
+    for elf in 1..=cap {
+      for i in (elf..=cap).step_by(elf) {
+        cache[i] += 10 * elf as u32;
       }
-
-      if count >= input_num {
-        break;
-      }
-
-      house_num += 1;
     }
 
-    Some(house_num.to_string())
+    let result = cache.iter().position(|&p| p >= input_num).unwrap();
+    Some(result.to_string())
   }
 
   fn solution_extra(&self) -> Option<String> {
