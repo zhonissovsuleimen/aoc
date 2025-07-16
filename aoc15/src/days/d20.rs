@@ -32,6 +32,14 @@ The first house gets 10 presents: it is visited only by Elf 1, which delivers 1 
 What is the lowest house number of the house to get at least as many presents as the number in your puzzle input?
 */
 
+/*
+--- Part Two ---
+
+The Elves decide they don't want to visit an infinite number of houses. Instead, each Elf will stop after delivering presents to 50 houses. To make up for it, they decide to deliver presents equal to eleven times their number at each house.
+
+With these changes, what is the new lowest house number of the house to get at least as many presents as the number in your puzzle input?
+*/
+
 impl Day for D20 {
   fn day(&self) -> usize {
     20
@@ -64,7 +72,23 @@ impl Day for D20 {
     let Some(input) = self.input() else {
       return None;
     };
+    let input_num = input.parse::<u32>().unwrap();
+    let cap = (input_num / 11) as usize;
+    let mut cache = vec![0u32; cap + 1];
 
-    None
+    for elf in 1..cap {
+      let mut count = 0;
+      for i in (elf..=cap).step_by(elf) {
+        cache[i] += elf as u32 * 11;
+        count += 1;
+
+        if count == 50 {
+          break;
+        }
+      }
+    }
+
+    let result = cache.iter().position(|&p| p >= input_num).unwrap();
+    Some(result.to_string())
   }
 }
