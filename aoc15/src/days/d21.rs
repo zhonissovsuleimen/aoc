@@ -54,6 +54,14 @@ In this scenario, the player wins! (Barely.)
 You have 100 hit points. The boss's actual stats are in your puzzle input. What is the least amount of gold you can spend and still win the fight?
 */
 
+/*
+--- Part Two ---
+
+Turns out the shopkeeper is working with the boss, and can persuade you to buy whatever items he wants. The other rules still apply, and he still only has one of each item.
+
+What is the most amount of gold you can spend and still lose the fight?
+*/
+
 impl Day for D21 {
   fn day(&self) -> usize {
     21
@@ -163,7 +171,87 @@ impl Day for D21 {
       return None;
     };
 
-    None
+    let me = Unit {
+      health: 100,
+      damage: 0,
+      armor: 0,
+    };
+
+    let mut boss = Unit {
+      health: 0,
+      damage: 0,
+      armor: 0,
+    };
+
+    for line in input.lines() {
+      let tokens = line.split(' ').collect::<Vec<&str>>();
+
+      match tokens.as_slice() {
+        ["Hit", "Points:", hp] => {
+          boss.health = hp.parse().unwrap();
+        }
+        ["Damage:", dmg] => {
+          boss.damage = dmg.parse().unwrap();
+        }
+        ["Armor:", armor] => {
+          boss.armor = armor.parse().unwrap();
+        }
+        _ => unreachable!(),
+      }
+    }
+
+    let weapon_shop = vec![
+      (8, 4),
+      (10, 5),
+      (25, 6),
+      (40, 7),
+      (74, 8),
+    ];
+
+    let armor_shop = vec![
+      None,
+      Some((13, 1)),
+      Some((31, 2)),
+      Some((53, 3)),
+      Some((75, 4)),
+      Some((102, 5)),
+    ];
+
+    let ring_shop = vec![
+      None,
+      None,
+      Some((25, (1, 0))),
+      Some((50, (2, 0))),
+      Some((100, (3, 0))),
+      Some((20, (0, 1))),
+      Some((40, (0, 2))),
+      Some((80, (0, 3))),
+    ];
+
+    let mut max_cost = 0;
+    for (w_cost, dmg) in &weapon_shop {
+      for armor in &armor_shop {
+        let (a_cost, armor) = armor.unwrap_or((0,0));
+        for i in 0..ring_shop.len() - 1 {
+          for j in (i + 1)..ring_shop.len() {
+            let (ra_cost, ra_stats) = ring_shop[i].unwrap_or((0, (0, 0)));
+            let (rb_cost, rb_stats) = ring_shop[j].unwrap_or((0, (0, 0)));
+
+            let local_cost = w_cost + a_cost + ra_cost + rb_cost;
+            let mut new_me = me.clone();
+            new_me.damage += dmg + ra_stats.0 + rb_stats.0;
+            new_me.armor += armor + ra_stats.1 + rb_stats.1;
+
+            if !new_me.beats(&boss) {
+              max_cost = max_cost.max(local_cost);
+            }
+          }
+        }
+
+      }
+    }
+
+    Some(max_cost.to_string())
   }
 }
 
