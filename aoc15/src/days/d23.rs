@@ -30,6 +30,13 @@ inc a
 What is the value in register b when the program in your puzzle input is finished executing?
 
 */
+
+/*
+--- Part Two ---
+
+The unknown benefactor is very thankful for releasi-- er, helping little Jane Marie with her computer. Definitely not to distract you, what is the value in register b after the program is finished executing if register a starts as 1 instead?
+
+*/
 impl Day for D23 {
   fn day(&self) -> usize {
     23
@@ -109,6 +116,56 @@ impl Day for D23 {
       return None;
     };
 
-    None
+    let (mut a, mut b) = (1i64, 0i64);
+    let lines = input.lines().collect::<Vec<&str>>();
+
+    let mut i = 0i64;
+    while i >= 0 && i < lines.len() as i64 {
+      let tokens = lines[i as usize].split(' ').collect::<Vec<&str>>();
+      match tokens.as_slice() {
+        ["hlf", reg] => {
+          if *reg == "a" {
+            a /= 2;
+          } else {
+            b /= 2;
+          }
+        }
+        ["tpl", reg] => {
+          if *reg == "a" {
+            a *= 3;
+          } else {
+            b *= 3;
+          }
+        }
+        ["inc", reg] => {
+          if *reg == "a" {
+            a += 1;
+          } else {
+            b += 1;
+          }
+        }
+        ["jmp", offset] => {
+          i += offset.parse::<i64>().unwrap();
+          continue;
+        }
+        ["jie", reg, offset] => {
+          if (*reg == "a," && a % 2 == 0) || (*reg == "b," && b % 2 == 0) {
+            i += offset.parse::<i64>().unwrap();
+            continue;
+          }
+        }
+        ["jio", reg, offset] => {
+          if (*reg == "a," && a == 1) || (*reg == "b," && b == 1) {
+            i += offset.parse::<i64>().unwrap();
+            continue;
+          }
+        }
+        _ => break,
+      }
+
+      i += 1;
+    }
+
+    Some(b.to_string())
   }
 }
