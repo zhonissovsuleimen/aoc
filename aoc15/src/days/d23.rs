@@ -57,7 +57,6 @@ impl Day for D23 {
     let mut i = 0i32;
     while i >= 0 && i < lines.len() as i32 {
       let tokens = lines[i as usize].split(' ').collect::<Vec<&str>>();
-      println!("{:?}", tokens.as_slice());
       match tokens.as_slice() {
         ["hlf", reg] => {
           if *reg == "a" {
@@ -91,13 +90,12 @@ impl Day for D23 {
           }
         }
         ["jio", reg, offset] => {
-          println!("beep");
           if (*reg == "a," && a == 1) || (*reg == "b," && b == 1) {
             i += offset.parse::<i32>().unwrap();
             continue;
           }
         }
-        _ => unreachable!(),
+        _ => break,
       }
 
       i += 1;
